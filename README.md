@@ -4,7 +4,9 @@ The active dashboard is the University of Lusaka staff workspace, connected to t
 
 **Start here: [Campus setup, API contracts and validation](CAMPUS.md).**
 
-Features: rooms and map locations, departments, courses, timetable publishing, announcements, student-account administration, and booking approval/cancellation. Run on port 3001 with `npm run dev`. Existing staff authentication remains separate from student users.
+Features: campus-scoped room maps and geolocation, departments/courses/programmes, smart timetable previews, quizzes/tests/exams, reviewed HTTPS API imports, announcements, student accounts and booking approvals. Run on port 3001 with `npm run dev`; `/setup` explains initial administrator bootstrap. Existing staff authentication remains separate from student users.
+
+**Before launch:** configure matching database/integration settings in both apps and populate the verified UNILUS programme catalogue with explicit Silverest, Massmedia or Leopards Hill assignments before enabling student registration. No official mappings, demo data or credentials are bundled. See [CAMPUS.md](CAMPUS.md) for map limitations, transaction requirements, API contracts and validation (`npm test`, typecheck, lint, build).
 
 The following legacy dealership documentation describes dormant compatibility modules, not the current campus workspace.
 

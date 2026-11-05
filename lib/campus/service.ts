@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/database";
 import { HttpError } from "@/lib/server/http";
 import { Booking, Room, Student, Timetable } from "./models";
 import { bookingPolicy, lusakaTime, overlaps, type BookingInput } from "./policy";
+import { Assessment } from "./assessment-models";
 
 export function requireIntegration(request: Request) {
   const expected = process.env.STUDENT_APP_API_KEY;
@@ -50,6 +51,7 @@ export async function validateBooking(input: BookingInput, session: ClientSessio
     ...(excludeId ? { _id: { $ne: excludeId } } : {}),
   }).session(session);
   if (conflict) throw new HttpError(409, "This room already has a booking during that time.");
+  if (await Assessment.exists({ room: input.roomId, status: "published", startTime: { $lt: input.endTime }, endTime: { $gt: input.startTime } }).session(session)) throw new HttpError(409, "This room is reserved for an assessment.");
   const local = lusakaTime(input.startTime), end = lusakaTime(input.endTime);
   const rows = await Timetable.find({ room: input.roomId, status: "published", dayOfWeek: local.day }).session(session);
   if (rows.some((row) => overlaps(local.time, end.time, row.startTime, row.endTime))) {

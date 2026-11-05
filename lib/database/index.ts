@@ -1,10 +1,7 @@
-import { setServers } from "node:dns";
+import { setServers } from "node:dns/promises";
 import mongoose from "mongoose";
 
 const MONGODB_URL = process.env.MONGODB_URL;
-
-// Optional override for hosts whose local resolver refuses the SRV lookups used by mongodb+srv:// URLs.
-if (process.env.DNS_SERVERS) setServers(process.env.DNS_SERVERS.split(",").map((server) => server.trim()).filter(Boolean));
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -23,6 +20,8 @@ export async function connectToDatabase() {
   if (cached.conn && mongoose.connection.readyState === 1) return cached.conn;
 
   if (!cached.promise) {
+    // Apply the configured resolver when connecting, including retries after development-worker initialization.
+    if (process.env.DNS_SERVERS) setServers(process.env.DNS_SERVERS.split(",").map((server) => server.trim()).filter(Boolean));
     cached.promise = mongoose
       .connect(MONGODB_URL, { bufferCommands: false, serverSelectionTimeoutMS: 15000, connectTimeoutMS: 20000, maxPoolSize: 10 })
       .catch((error) => {

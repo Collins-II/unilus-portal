@@ -38,7 +38,8 @@ function InboxView({ data }: { data: WorkspaceData }) {
   const [search, setSearch] = useState("");
   const [list, setList] = useState<ConversationSummary[] | null>(null);
   const [listError, setListError] = useState("");
-  const [thread, setThread] = useState<Thread | null>(null);
+  const [loadedThread, setThread] = useState<Thread | null>(null);
+  const thread = loadedThread?.conversation.id === selectedId ? loadedThread : null;
   const [threadError, setThreadError] = useState("");
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
@@ -70,12 +71,26 @@ function InboxView({ data }: { data: WorkspaceData }) {
     }
   }, []);
 
-  useEffect(() => { void loadList(); }, [loadList]);
   useEffect(() => {
-    setNotice("");
-    if (selectedId) void loadThread(selectedId);
-    else setThread(null);
-  }, [selectedId, loadThread]);
+    let active = true;
+    api<ConversationSummary[]>(`/api/conversations${filter === "all" ? "" : `?status=${filter}`}`)
+      .then((result) => { if (active) { setList(result); setListError(""); } })
+      .catch((error: unknown) => { if (active) setListError(errorMessage(error)); });
+    return () => { active = false; };
+  }, [filter]);
+  useEffect(() => {
+    if (!selectedId) return;
+    let active = true;
+    api<Thread>(`/api/conversations/${selectedId}`)
+      .then((result) => {
+        if (!active) return;
+        setThread(result); setThreadError(""); setNotice(""); setReply("");
+        requestAnimationFrame(() => bottom.current?.scrollIntoView({ block: "end" }));
+        void refreshWorkspace();
+      })
+      .catch((error: unknown) => { if (active) setThreadError(errorMessage(error)); });
+    return () => { active = false; };
+  }, [selectedId]);
   useVisibleInterval(() => {
     void loadList();
     if (selectedId) void loadThread(selectedId, true);

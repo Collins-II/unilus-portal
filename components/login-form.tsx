@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Loader2, LockKeyhole } from "lucide-react";
@@ -45,6 +46,7 @@ export function LoginForm() {
           <button className="primary-button" disabled={working}>{working ? <Loader2 size={16} className="spin" /> : <LockKeyhole size={16} />}{working ? t("login.working") : t("login.submit")}</button>
         </form>
         <small className="login-help">Use your campus staff account. Students sign in through the student application.</small>
+        <Link className="text-link login-help" href="/setup">Initial administrator setup</Link>
       </div>
     </main>
   );

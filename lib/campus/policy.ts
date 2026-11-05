@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { campusFor, campusIds } from "./geography.ts";
+import { hasTeachingProperties } from "./location-properties.ts";
 
 const text = (max: number) => z.string().trim().min(1).max(max);
 export const objectId = z.string().regex(/^[a-f\d]{24}$/i, "Invalid record ID.");
@@ -41,18 +43,23 @@ const status = z.enum(["draft", "published"]);
 export const resourceSchemas = {
   rooms: z.object({
     name: text(120), code, building: text(120), floor: z.number().int().min(-10).max(200).default(0),
-    capacity: z.number().int().min(0).max(10000),
+    capacity: z.number().int().min(0).max(10000).default(0),
     spaceType: z.enum(["lecture_room", "laboratory", "seminar_room", "office", "library", "clinic", "cafeteria", "residence", "administrative", "other"]),
     latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180),
     description: z.string().trim().max(2000).default(""),
     equipment: z.array(text(100)).max(50).default([]), isAvailable: z.boolean(),
-  }).strict(),
+  }).strict().refine((room) => Boolean(campusFor(room)), { message: "Choose coordinates inside a supported UNILUS navigation scope." })
+    .transform((room) => hasTeachingProperties(room.spaceType) ? room : { ...room, capacity: 0, equipment: [] }),
   departments: z.object({ code, name: text(120) }).strict(),
   courses: z.object({ code, title: text(160), department: objectId }).strict(),
+  programmes: z.object({ code, name: text(160), department: objectId, campus: z.enum(campusIds) }).strict(),
   timetable: z.object({
     academicYear: text(30), semester: text(30), department: objectId, course: objectId, room: objectId,
     cohort: text(100), lecturer: text(120), dayOfWeek: z.number().int().min(0).max(6),
     startTime: time, endTime: time, notes: z.string().trim().max(2000).default(""), status,
+    classSize: z.number().int().min(0).max(10000).default(0),
+    requiredEquipment: z.array(text(100)).max(20).default([]),
+    roomType: z.enum(["lecture_room", "laboratory", "seminar_room"]).optional(),
   }).strict().refine((value) => value.startTime < value.endTime, { message: "End time must be after start time." }),
   announcements: z.object({ title: text(160), message: text(5000), priority: z.enum(["normal", "important", "urgent"]), status }).strict(),
   students: z.object({

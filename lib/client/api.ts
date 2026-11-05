@@ -17,11 +17,16 @@ export async function api<T = unknown>(path: string, init: { method?: string; bo
   }).catch(() => {
     throw new ApiError(0, "You appear to be offline. Check your connection and try again.");
   });
-  const payload = await response.json().catch(() => null);
   if (response.status === 401 && typeof window !== "undefined") {
-    window.location.href = `/login?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+    window.location.assign(new URL(`/login?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`, window.location.origin).href);
   }
-  if (!response.ok) throw new ApiError(response.status, payload?.error ?? "Something went wrong. Please try again.");
+  let payload: unknown;
+  try { payload = await response.json(); }
+  catch { throw new ApiError(response.status === 401 ? 401 : 502, response.status === 401 ? "Please sign in to continue." : "The server returned an invalid response. Please try again."); }
+  if (!response.ok) {
+    const message = payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string" ? payload.error : "Something went wrong. Please try again.";
+    throw new ApiError(response.status, message);
+  }
   return payload as T;
 }
 

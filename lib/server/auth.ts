@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
 import { connectToDatabase } from "@/lib/database";
 import { Staff } from "@/lib/database/models";
-import type { Role } from "@/lib/domain";
+import { staffInput, type Role } from "@/lib/domain";
 import { SESSION_COOKIE } from "@/lib/session-cookie";
 import { HttpError, rateLimit } from "@/lib/server/http";
 
@@ -39,7 +39,8 @@ async function bootstrapAdmin(email: string, password: string) {
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminEmail || !adminPassword || email !== adminEmail || password !== adminPassword) return;
   if (await Staff.estimatedDocumentCount() > 0) return;
-  await Staff.create({ name: process.env.ADMIN_NAME || "Administrator", email: adminEmail, passwordHash: await hashPassword(adminPassword), role: "admin" });
+  const input = staffInput.parse({ name: process.env.ADMIN_NAME || "Administrator", email: adminEmail, password: adminPassword, role: "admin" });
+  await Staff.create({ name: input.name, email: input.email, passwordHash: await hashPassword(input.password), role: input.role });
 }
 
 export const authOptions: NextAuthOptions = {

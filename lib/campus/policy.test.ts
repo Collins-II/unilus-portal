@@ -50,3 +50,16 @@ test("campus schemas reject invalid times, unknown fields and invalid coordinate
   assert.equal(resourceSchemas.rooms.safeParse({ code: "L1", name: "Lecture 1", building: "Main", capacity: 30, spaceType: "lecture_room", latitude: -100, longitude: 28, isAvailable: true }).success, false);
   assert.equal(resourceSchemas.timetable.safeParse({ academicYear: "2026", semester: "1", department: "123456789012345678901234", course: "123456789012345678901234", room: "123456789012345678901234", cohort: "Year 1", lecturer: "Dr Test", dayOfWeek: 1, startTime: "25:00", endTime: "26:00", status: "published" }).success, false);
 });
+test("nonteaching locations discard capacity and equipment while retaining their floor", () => {
+  const input = { code: "LIB", name: "Library", building: "Test", floor: 2, capacity: 200, equipment: ["Projector"], latitude: -15.3554635, longitude: 28.4691588, isAvailable: true };
+  for (const spaceType of ["office", "library", "clinic", "cafeteria", "residence", "administrative", "other"]) {
+    const result = resourceSchemas.rooms.parse({ ...input, spaceType });
+    assert.equal(result.capacity, 0); assert.deepEqual(result.equipment, []); assert.equal(result.floor, 2);
+  }
+  for (const spaceType of ["lecture_room", "laboratory", "seminar_room"]) assert.equal(resourceSchemas.rooms.parse({ ...input, spaceType }).capacity, 200);
+});
+test("programme catalogue requires explicit supported campus and forbids forged student campus", () => {
+  assert.equal(resourceSchemas.programmes.parse({ code: "test", name: "Test programme", department: "123456789012345678901234", campus: "leopards-hill" }).code, "TEST");
+  assert.equal(resourceSchemas.programmes.safeParse({ code: "MED", name: "Medicine", department: "123456789012345678901234", campus: "unknown" }).success, false);
+  assert.equal(resourceSchemas.students.safeParse({ studentId: "TEST", name: "Test", email: "test@example.invalid", status: "active", campus: "silverest" }).success, false);
+});

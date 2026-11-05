@@ -745,3 +745,38 @@ button:disabled { cursor: not-allowed; opacity: .65; }
 .inventory-tabs > button.active { color: #1769c2; border-bottom-color: #1769c2; }
 .bubble.staff { background: #1769c2; border-color: #1769c2; }
 .login-page { background: radial-gradient(circle at 20% 10%, #e8f2fc, transparent 45%), #f5f7fa; }
+ .campus-form-grid { padding: 0; border: 0; min-width: 0; }
+ .campus-form-grid textarea { width: 100%; padding: 10px; border: 1px solid #d7dfe7; border-radius: 5px; background: #f9fbfc; color: #41566c; font-size: 12px; resize: vertical; }
+ .campus-form-grid small, .import-policy-note, .import-mapping-heading p { color: #637688; font-size: 11px; line-height: 1.7; }
+ .campus-room-dialog, .campus-import-dialog { width: min(860px, calc(100vw - 32px)); max-width: min(860px, calc(100vw - 32px)); }
+ .location-picker { border: 1px solid #dce5ef; border-radius: 8px; overflow: hidden; margin-top: 16px; }
+ .location-picker-heading { padding: 12px 15px; font-size: 12px; background: #f4f8fc; }
+ .location-picker-heading p { margin-top: 4px; font-size: 11px; color: #637688; }
+ .location-picker-map { height: 300px; width: 100%; z-index: 0; }
+ .campus-map-pin { background: #1769c2; border: 3px solid white; border-radius: 50%; box-shadow: 0 1px 8px #172d4c80; }
+ .location-picker-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px; font-size: 11px; }
+ .location-picker-actions > span { color: #637688; font-variant-numeric: tabular-nums; }
+ .location-picker-warning { padding: 10px 15px; color: #956100; background: #fff7e6; font-size: 11px; }
+ .import-checkbox { display: flex; align-items: center; gap: 10px; font-size: 12px; line-height: 1.6; }
+ .import-mapping-heading { padding-top: 10px; font-size: 13px; }
+ .import-policy-note { padding: 12px 14px; background: #f4f8fc; border-radius: 6px; margin-top: 16px; }
+ .import-summary { display: flex; gap: 20px; padding: 16px; background: #edf4e7; color: #496b37; border-radius: 8px; font-size: 13px; }
+ .import-preview { max-height: 330px; overflow: auto; }
+ .campus-import-dialog table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+ .campus-import-dialog th, .campus-import-dialog td { padding: 10px 12px; border-bottom: 1px solid #e6ebf0; overflow-wrap: anywhere; }
+ .campus-import-dialog th { position: sticky; top: 0; background: #f4f8fc; z-index: 1; }
+ .campus-table-toolbar { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+ .campus-table-toolbar select { min-width: 150px; }
+ .campus-table-toolbar small { font-size: 10px; color: #637688; }
+ .campus-pagination { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 20px; font-size: 11px; }
+ .password-setup-note { display: block; font-size: 10px; color: #956100; margin-top: 5px; }
+ .login-card.campus-setup-card { width: min(680px, 100%); gap: 20px; }
+ .campus-setup-card h1 { font-size: 24px; font-weight: 700; }
+ .campus-setup-card > p { line-height: 1.8; }
+ .campus-setup-steps { padding-left: 22px; list-style: decimal; font-size: 12px; line-height: 1.8; color: #41566c; }
+ .campus-setup-steps li { padding-left: 5px; margin-bottom: 16px; }
+ .campus-setup-steps p { color: #637688; }
+ .campus-setup-steps code { font-size: 11px; overflow-wrap: anywhere; }
+ .schedule-demand { border: 1px solid var(--line, #e1e6ed); border-radius: 12px; padding: 16px; margin: 16px 0; }
+ .schedule-demand .panel-heading { padding: 0 0 12px; }
+ .schedule-demand + .secondary-button { margin-bottom: 12px; }

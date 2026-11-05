@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { SESSION_COOKIE } from "@/lib/session-cookie";
 
-const PUBLIC_PATHS = ["/login", "/api/auth", "/api/public", "/api/health", "/api/integration"];
+const PUBLIC_PATHS = ["/login", "/setup", "/api/auth", "/api/public", "/api/health", "/api/integration"];
 
 /** Requires a staff session for every page and API route except sign-in, auth and the public website API. */
 export async function proxy(request: NextRequest) {
